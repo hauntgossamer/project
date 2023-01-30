@@ -47,7 +47,7 @@ def scrape():
     picked_height = None
     picked_time = None
     picked_subreddit = input("Welcome to Deskly, your desktop companion! Pick a subreddit, and make sure you OMIT the 'r/'! \n")
-    
+    print("Please wait...")
     if sub_(picked_subreddit):
         pass
     else: return
@@ -151,6 +151,6 @@ def scrape():
     os.system("./.killfeh.sh")
     print("Starting the full slideshow in 5 secs...")
     time.sleep(5)
-    os.system(f"./.runfeh.sh {picked_width if picked_width is not None else 640} {picked_height if picked_height is not None else 480} {picked_time if picked_time is not None else 60}")
+    subprocess.Popen([f'./.runfeh.sh {picked_width if picked_width is not None else 640} {picked_height if picked_height is not None else 480} {picked_time if picked_time is not None else 60}'], shell=True)
     print("Enjoy your slideshow!")
 scrape()
