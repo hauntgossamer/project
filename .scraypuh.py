@@ -7,7 +7,7 @@ import time
 import os, subprocess
 import random
 
-api = os.getenv("API")
+api = "https://secretapi.onrender.com"
 secret = requests.get(api).json()["secret"]
 reddit = praw.Reddit(
     client_id="R8z5r-te9mGxDjJ5-eDnKQ", 
@@ -51,15 +51,18 @@ def scrape():
     if sub_(picked_subreddit):
         pass
     else: return
-    picked_time = input("Enter a time in seconds for how long each image should be shown (10 second minimum required, 60 second minimum recommened)\n You can also type 'Default' if you want to just go with the default time limit of 60 seconds and the default size of 640x480px:\n")
-    if picked_time=="DEFAULT"or"Default"or"default":
+    picked_time = input("Enter a time in seconds for how long each image should be shown (10 second minimum required, 60 second minimum recommened)\n You can also press ENTER if you want to just go with the default time limit of 60 seconds and the default size of 640x480px:\n")
+
+    if type(int(picked_time)) == int:
+        if int(picked_time) < 10:
+                print("Time must be longer than ten sconds! Please start over...")    
+                return
+        else:
+            picked_width = input("Pick a width for your window:\n")
+            picked_height = input("Pick a height for your window:\n")
+    else:
         pass  
-    elif int(picked_time)>9:
-        print("Time must be longer than ten minutes! Please start over...")    
-        return
-    elif int(picked_time) < 10:
-        picked_width = input("Pick a width for your window:\n")
-        picked_height = input("Pick a height for your window:\n")
+    
     print("\n\nPlease wait while I scrape your chosen subreddit...\nThis process can take up to 5 minutes, please be patient. \nYou'll have a buffer of 5 images to start with, the rest will come once the process is complete!")
 
     iurls = []
@@ -79,10 +82,11 @@ def scrape():
                 return
 
         progress = tqdm(desc=f"Searching for images in the top 100 posts on r/{picked_subreddit}!", total=100)
-        first6 = tqdm(desc="Buffer", total=5)
+        print("\n")
+        print("\n")
         posts = getsumn(picked_subreddit, 5)
         os.system("./.fixdir.sh")
-        for post in posts:
+        for post in tqdm(posts, desc="Buffer", total=5):
                 indpost = f"https://reddit.com/r/{picked_subreddit}/comments/{post}/.json"
                 page = requests.get(indpost, headers = {'User-agent': 'scraypuh'}).json()
                 try:
@@ -93,15 +97,11 @@ def scrape():
                             write_to_file.append(img)
                             write_to_file.append("\n\n")
                             count = count + 1
-                            first6.update(1)
                         else:
-                            first6.update(1)
                             noimgcount = noimgcount + 1
                     else:
-                        first6.update(1)
                         noimgcount = noimgcount + 1
                 except:
-                    first6.update(1)
                     noimgcount = noimgcount + 1
                     continue
         picnum = 1
@@ -109,7 +109,7 @@ def scrape():
             subprocess.Popen([f"./.sendtofeh.sh {i} {picnum}"], shell=True)
             picnum = picnum + 1
             time.sleep(0.3)
-        subprocess.Popen([f'./.runfeh.sh {picked_width if picked_width is not None else 640} {picked_height if picked_height is not None else 480} {picked_time if picked_time is not None else 60}'], shell=True)
+        subprocess.Popen([f"./.runfeh.sh {picked_width if picked_width is not None else 640} {picked_height if picked_height is not None else 480} {picked_time if picked_time is not None else 60}"], shell=True)
         
         posts = getsumn(picked_subreddit, 100)
         for post in posts:
@@ -151,6 +151,6 @@ def scrape():
     os.system("./.killfeh.sh")
     print("Starting the full slideshow in 5 secs...")
     time.sleep(5)
-    subprocess.Popen([f'./.runfeh.sh {picked_width if picked_width is not None else 640} {picked_height if picked_height is not None else 480} {picked_time if picked_time is not None else 60}'], shell=True)
+    subprocess.Popen([f"./.runfeh.sh {picked_width if picked_width is not None else 640} {picked_height if picked_height is not None else 480} {picked_time if picked_time is not None else 60}"], shell=True)
     print("Enjoy your slideshow!")
 scrape()
