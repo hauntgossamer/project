@@ -46,7 +46,7 @@ def scrape():
     picked_width = None
     picked_height = None
     picked_time = None
-    picked_subreddit = input("Welcome to Deskly, your desktop companion! Pick a subreddit, and make sure you OMIT the 'r/'! \n")
+    picked_subreddit = input("Welcome to Scraypuh, your desktop subreddit scraping companion! Pick a subreddit, and make sure you OMIT the 'r/'! \n")
     print("Please wait...")
     if sub_(picked_subreddit):
         pass
